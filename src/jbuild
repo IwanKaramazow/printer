@@ -1,0 +1,10 @@
+(jbuild_version 1)
+
+(library
+  ((name wadler)
+    (public_name wadler)
+    (modules
+      (easy_format
+       easy_wadler
+       pretty))
+    (flags (-open Wadler))))

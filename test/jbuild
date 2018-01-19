@@ -1,0 +1,23 @@
+(jbuild_version 1)
+
+(executable
+ ((name test)
+  (modules (test))
+  (flags (-open Wadler))
+  (libraries (wadler))))
+
+(executable
+  ((name compat)
+   (modules (compat))
+  (libraries (wadler))))
+
+
+(alias
+ ((name runtest)
+  (deps (test.exe))
+  (action (run ${<}))))
+
+(alias
+ ((name runtest)
+  (deps (compat.exe))
+  (action (run ${<}))))

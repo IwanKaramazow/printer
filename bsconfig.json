@@ -1,0 +1,15 @@
+{
+  "name" : "Wadler",
+  "namespace": true,
+  "sources" : ["src", "test"],
+  "entries": [
+  {
+    "backend": "native",
+    "main-module": "Test"
+  },
+  {
+    "backend": "native",
+    "main-module": "Compat"
+  }],
+  "ocaml-flags": ["-safe-string"]
+}

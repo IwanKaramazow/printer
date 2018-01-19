@@ -1,0 +1,25 @@
+lib: [
+  "_build/install/default/lib/wadler/META" {"META"}
+  "_build/install/default/lib/wadler/opam" {"opam"}
+  "_build/install/default/lib/wadler/wadler__Easy_format.cmi"
+  "_build/install/default/lib/wadler/wadler__Easy_format.cmx"
+  "_build/install/default/lib/wadler/wadler__Easy_format.cmt"
+  "_build/install/default/lib/wadler/wadler__Easy_format.cmti"
+  "_build/install/default/lib/wadler/easy_format.mli"
+  "_build/install/default/lib/wadler/wadler__Easy_wadler.cmi"
+  "_build/install/default/lib/wadler/wadler__Easy_wadler.cmx"
+  "_build/install/default/lib/wadler/wadler__Easy_wadler.cmt"
+  "_build/install/default/lib/wadler/easy_wadler.ml"
+  "_build/install/default/lib/wadler/wadler__Pretty.cmi"
+  "_build/install/default/lib/wadler/wadler__Pretty.cmx"
+  "_build/install/default/lib/wadler/wadler__Pretty.cmt"
+  "_build/install/default/lib/wadler/pretty.ml"
+  "_build/install/default/lib/wadler/wadler.cmi"
+  "_build/install/default/lib/wadler/wadler.cmx"
+  "_build/install/default/lib/wadler/wadler.cmt"
+  "_build/install/default/lib/wadler/wadler.ml-gen"
+  "_build/install/default/lib/wadler/wadler.cma"
+  "_build/install/default/lib/wadler/wadler.cmxa"
+  "_build/install/default/lib/wadler/wadler.a"
+  "_build/install/default/lib/wadler/wadler.cmxs"
+]

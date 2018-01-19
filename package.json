@@ -1,0 +1,31 @@
+{
+  "name": "wadler",
+  "version": "0.0.1",
+  "description": "Implementation of Lindig's Strictly Pretty with compat for Easy_format",
+  "main": "easy_format.ml",
+  "scripts": {
+    "test": "esy jbuilder runtest"
+  },
+  "esy": {
+    "build": [
+      [
+        "jbuilder",
+        "runtest"
+      ]
+    ],
+    "buildsInSource": "_build"
+  },
+  "dependencies": {
+    "@opam/jbuilder": "^1.0.0-beta16"
+  },
+  "devDependencies": {
+    "@opam/merlin": "*",
+    "bs-platform": "github:bsansouci/bsb-native#2.1.1",
+    "ocaml": "4.6.0"
+  },
+  "peerDependencies": {
+    "ocaml": "4.6.0"
+  },
+  "author": "Iwan Karamazow",
+  "license": "MIT"
+}
