@@ -14,3 +14,5 @@ test_script:
   - node_modules\\.bin\\bsb -make-world -backend native
   - lib\\bs\\native\\test.native
   - lib\\bs\\native\\compat.native
+
+build: off
