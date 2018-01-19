@@ -1,11 +1,15 @@
 {
-  "build": [
-    [
-      "jbuilder",
-      "runtest"
-    ]
-  ],
-  "buildsInSource": "_build",
+  "name": "wadler",
+  "version": "0.0.1",
+  "esy": {
+    "build": [
+      [
+        "jbuilder",
+        "runtest"
+      ]
+    ],
+    "buildsInSource": "_build"
+  },
   "dependencies": {
     "@opam/jbuilder": "^1.0.0-beta16"
   },
