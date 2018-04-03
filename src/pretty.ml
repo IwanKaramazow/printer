@@ -13,6 +13,7 @@ type doc =
   | IfBreaks of string * string
   | Group of doc 
   | Cursor
+  | Fill of doc list
 
 let empty = Nil
 let concat x y = Cons(x,y) 
@@ -22,6 +23,7 @@ let sep s = Separator s
 let group d = Group d
 let cursor = Cursor
 let ifbreaks a b = IfBreaks(a, b)
+let fill xs = Fill xs
 
 module Infix = struct
   let (++) = concat
@@ -107,6 +109,11 @@ let rec format w k = function
   | (i, Flat, Separator(sep))::rest -> SText(sep, format w (k + strlen sep) rest)
   | (i, Break, Separator(s))::rest -> SLine(i, format w i rest)
   | (i, m, Nest(indent, doc))::rest -> format w k ((i + indent, m, doc)::rest)
+  | (i, m, Fill(docs))::rest ->
+      let docsTree = List.fold_left (fun acc curr ->
+        concat acc (concat (sep "") curr)
+      ) Nil docs in
+      format w k ((i, m, docsTree)::rest)
   | (i, m, Group(doc))::rest -> 
     if fit (w-k) ((i, Flat, doc)::rest) then 
       format w k ((i, Flat, doc)::rest)
