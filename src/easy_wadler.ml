@@ -1,6 +1,6 @@
 (* Attempt to unify break-style between list & label *)
 module Break = struct
-  type t = 
+  type t =
     | Never
     | IfNeed
     | Always
@@ -24,7 +24,7 @@ type list_config = {
   space_after_separator : bool;
   space_before_separator : bool;
 
-  (* This is a terrible name, 
+  (* This is a terrible name,
    * it really means that the separator
    * sticks to the right side of a list item
    * If this is true, we get the following fmting:
@@ -97,13 +97,13 @@ let rec to_doc = function
       let open Pretty in
       let open Infix in
       let ending =
-        (if config.space_before_closing && config.align_closing == true then sep " " 
+        (if config.space_before_closing && config.align_closing == true then sep " "
         else if config.space_before_closing && config.align_closing == false then text " "
         else sep "")
         ++ text config.closing
       in
       let rec docs_of_list acc = function
-        | x::xs -> 
+        | x::xs ->
             (* TODO performance *)
             docs_of_list (acc
             ++ (to_doc x)
@@ -117,14 +117,14 @@ let rec to_doc = function
         | [] -> acc ++ (if config.align_closing == false then ending else empty)
       in
       group (
-        (if config.align_closing then empty 
+        (if config.align_closing then empty
          else text config.opening ++ (if config.space_after_opening then text " " else empty))
-        ++ 
+        ++
         nest config.indent_body (
           (if config.align_closing == true then
             text config.opening
             ++ (if config.space_after_opening then sep " " else sep "")
-            else empty) 
+            else empty)
           ++ (group (docs_of_list empty lst))
         )
         ++ (if config.align_closing == true then ending else empty)
@@ -140,4 +140,4 @@ let rec to_doc = function
         )
         ++ to_doc value
       )
-      
+

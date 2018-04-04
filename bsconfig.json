@@ -11,5 +11,9 @@
     "backend": "native",
     "main-module": "Compat"
   }],
-  "ocaml-flags": ["-safe-string"]
+  "ocaml-flags": ["-safe-string"],
+  "warnings": {
+    "number": "-27-32"
+  },
+  "refmt": 3
 }
