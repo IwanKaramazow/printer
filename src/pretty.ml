@@ -80,6 +80,9 @@ let rec fit w = function
   | (i, m, Nil)::xs -> fit w xs
   | (i, m, Cursor)::xs -> fit w xs
   | (i, m, Text(t))::xs -> fit (w - strlen t) xs
+  | (i, m, Fill(docs))::xs -> 
+      let rest = List.fold_left (fun xs x -> (i, m, x)::xs) xs docs in
+      fit w rest
   | (i, m, Cons(doc1, doc2))::xs -> fit w ((i, m, doc1)::(i, m, doc2)::xs)
   | (i, m, Nest(indent, doc))::xs -> fit w ((i + indent, m, doc)::xs)
   | (i, Flat, Separator(sep))::xs -> fit (w - strlen sep) xs
@@ -93,7 +96,7 @@ let rec fit w = function
 (*
  * So the actual mode m and indentation level i are paired with every element by the format function.
  * Its parameter w denotes the actual line length and the parameter k
- * how much characters of the current line have already been con sumed.
+ * how much characters of the current line have already been consumed.
  *)
 let rec format w k = function
   | [] -> SNil
@@ -110,12 +113,19 @@ let rec format w k = function
   | (i, Break, Separator(s))::rest -> SLine(i, format w i rest)
   | (i, m, Nest(indent, doc))::rest -> format w k ((i + indent, m, doc)::rest)
   | (i, m, Fill(docs))::rest ->
-      let docsTree = List.fold_left (fun acc curr ->
-        concat acc (concat (sep "") curr)
-      ) Nil docs in
-      format w k ((i, m, docsTree)::rest)
+      (* TODO performance *)
+      let rec aux acc = function
+        | x::xs -> 
+            if fit (w-k) ((i, Flat, x)::(acc@rest)) then
+              aux ((i, Flat, x)::acc) xs
+            else
+              aux ((i, Break, x)::(i, Break, Separator(""))::acc) xs
+        | [] -> List.rev acc
+      in
+      let newParts = aux [] docs in
+      format w k (newParts@rest)
   | (i, m, Group(doc))::rest -> 
-    if fit (w-k) ((i, Flat, doc)::rest) then 
+    if fit (w-k) ((i, Flat, doc)::rest) then
       format w k ((i, Flat, doc)::rest)
     else
       format w k ((i, Break, doc)::rest)

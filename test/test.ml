@@ -190,6 +190,10 @@ let () =
 }|} ~actual:(W.pretty 20 doc) ()
 
 let () =
+  let doc = W.fill [W.text "aa"; W.text "bb"; W.text "cc"] in
+  test ~expected:"aabb\ncc" ~actual:(W.pretty 5 doc) ()
+
+let () =
   if !test_passed then
     print_endline "Wadler printing algorithm passed :D !"
   else
