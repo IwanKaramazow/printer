@@ -4,29 +4,31 @@
  *)
 
 (* complex document *)
-type doc = 
+(* group isn't just nest with indentation 0. Nest inherits parent's break mode *)
+type doc =
   | Nil
   | Text of string
   | Cons of doc * doc
   | Nest of int * doc
   | Separator of string
   | IfBreaks of string * string
-  | Group of doc 
+  | Group of doc
   | Cursor
-  | Fill of doc list
+  | Fill of doc * doc
 
 let empty = Nil
-let concat x y = Cons(x,y) 
+let concat x y = Cons(x,y)
 let text s = Text s
 let nest i x = Nest(i,x)
 let sep s = Separator s
 let group d = Group d
 let cursor = Cursor
 let ifbreaks a b = IfBreaks(a, b)
-let fill xs = Fill xs
+let fill x y = Fill(x, y)
 
 module Infix = struct
   let (++) = concat
+  let (+++) = fill
 end
 
 (* simple document *)
@@ -46,9 +48,9 @@ type printResult = {
 let sdocToPrintResult sdoc =
   let rec aux sdoc index cursorOffset acc =
     match sdoc with
-    | SNil -> 
+    | SNil ->
       {cursor = cursorOffset; output = acc }
-    | SText(text, sdoc) -> 
+    | SText(text, sdoc) ->
         (* TODO calculate up front *)
         let nextIndex = index + String.length text in
         aux sdoc nextIndex cursorOffset (acc ^ text)
@@ -56,12 +58,12 @@ let sdocToPrintResult sdoc =
         let prefix = String.make i ' ' in
         aux sdoc (index + i + 2) cursorOffset (acc ^ newline ^ prefix)
     | SCursor sdoc ->
-        aux sdoc index index acc 
+        aux sdoc index index acc
   in
   aux sdoc 0 (-1) ""
 
-(* mode of a group*)      
-type mode = 
+(* mode of a group*)
+type mode =
   | Flat
   | Break
 
@@ -83,23 +85,25 @@ let rec fit w = function
   | (i, m, Cons(doc1, doc2))::xs -> fit w ((i, m, doc1)::(i, m, doc2)::xs)
   | (i, m, Nest(indent, doc))::xs -> fit w ((i + indent, m, doc)::xs)
   | (i, Flat, Separator(sep))::xs -> fit (w - strlen sep) xs
-  | (i, Break, Separator(sep))::xs -> true
+  | (i, Break, Separator(sep))::xs -> true (* impossible *)
   | (i, Flat, IfBreaks(_, noBreak))::xs -> fit (w - strlen noBreak) xs
   | (i, Break, IfBreaks(whenBreaks, _))::xs -> fit (w - strlen whenBreaks) xs
   | (i, m, Group(doc))::xs -> fit w ((i, Flat, doc)::xs)
+  | (i, m, Fill(doc1, doc2))::xs ->
+    fit w ((i, m, doc1)::(i, m, doc2)::xs)
 
 
 (* transforms a complex doc into a simple doc*)
 (*
  * So the actual mode m and indentation level i are paired with every element by the format function.
  * Its parameter w denotes the actual line length and the parameter k
- * how much characters of the current line have already been con sumed.
+ * how much characters of the current line have already been consumed.
  *)
 let rec format w k = function
   | [] -> SNil
   | (i, m, Nil)::rest -> format w k rest
   | (i, m, Cursor)::rest -> SCursor(format w k rest)
-  | (i, m, Text text)::rest -> 
+  | (i, m, Text text)::rest ->
       SText(text, format w (k + strlen text) rest)
   | (i, Flat, IfBreaks(_, noBreak))::rest ->
       SText(noBreak, format w (k + strlen noBreak) rest)
@@ -109,13 +113,13 @@ let rec format w k = function
   | (i, Flat, Separator(sep))::rest -> SText(sep, format w (k + strlen sep) rest)
   | (i, Break, Separator(s))::rest -> SLine(i, format w i rest)
   | (i, m, Nest(indent, doc))::rest -> format w k ((i + indent, m, doc)::rest)
-  | (i, m, Fill(docs))::rest ->
-      let docsTree = List.fold_left (fun acc curr ->
-        concat acc (concat (sep "") curr)
-      ) Nil docs in
-      format w k ((i, m, docsTree)::rest)
-  | (i, m, Group(doc))::rest -> 
-    if fit (w-k) ((i, Flat, doc)::rest) then 
+  | (i, m, Fill(doc1, doc2))::rest ->
+    if fit (w-k) [(i, Flat, doc1)] then
+      format w k ((i, Flat, doc1)::(i, m, doc2)::rest)
+    else
+      format w k ((i, Break, doc1)::(i, m, doc2)::rest)
+  | (i, m, Group(doc))::rest ->
+    if fit (w-k) ((i, Flat, doc)::rest) then
       format w k ((i, Flat, doc)::rest)
     else
       format w k ((i, Break, doc)::rest)
